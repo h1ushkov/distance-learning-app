@@ -1,0 +1,22 @@
+<form id="lessonForm" action="/api/lessons/cid/" method="POST">
+    <label for="courseSelect">Select a course:</label>
+    <select id="courseSelect" name="courseId" required>
+        <% courses.forEach((course) => { %>
+            <option value="<%= course.id %>"><%= course.title %></option>
+        <% }); %>
+    </select>
+    
+    <label for="lessonTitle">Lesson Title:</label>
+    <input type="text" id="lessonTitle" name="title" required>
+    
+    <button type="button" onclick="submitForm()">Add</button>
+</form>
+
+<script>
+    function submitForm() {
+        var form = document.getElementById('lessonForm');
+        var selectedCourseId = document.getElementById('courseSelect').value;
+        form.action = "/api/lessons/cid/" + selectedCourseId;
+        form.submit();
+    }
+</script>

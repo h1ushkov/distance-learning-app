@@ -1,0 +1,31 @@
+<!-- Your HTML file (index.html) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 Dashboard</title>
+    <script defer src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+    <link type="text/css" rel="stylesheet" href="/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body id="app">
+  <div class="wrapper">
+  <header>
+    <nav>
+<a href="/dashboard"><h1>DLA Dashboard</h1></a>
+<div hx-get="/course/new" hx-trigger="click" hx-target="#forms" class="link">➕ New course</div>
+<div hx-get="/lesson/new" hx-trigger="click" hx-target="#forms" class="link">➕ New lesson for course</div>
+<%- include('current-user.ejs', { user: user }) %>
+</nav>
+</header>
+<div id="forms">
+
+</div>
+<div id="courses-container">
+ <%- include('courses-list.ejs') %>
+</div>
+
+</div>
+</body>
+</html>

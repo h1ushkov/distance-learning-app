@@ -1,6 +1,5 @@
 # distance-learning-app
- DLA
-
+## How to use.
 Create .env in server directory:
 
 <code>PORT=8080

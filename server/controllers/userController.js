@@ -68,14 +68,11 @@ const userLogin = async (req, res) => {
           },
         },
         process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: "240m" }
+        { expiresIn: "60m" }
       );
 
       // Set accessToken as a secure HTTP-only cookie
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        maxAge: 60 * 60 * 1000,
-      }); // maxAge is in milliseconds
+      res.cookie('accessToken', accessToken, { httpOnly: false, maxAge: 60 * 60 * 1000, sameSite: 'Lax', secure: true }); // maxAge is in milliseconds
       console.log(accessToken);
 
       // Redirect to the dashboard after successful login
@@ -152,6 +149,8 @@ const findUserByUsername = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 module.exports = {
   findUserByUsername,

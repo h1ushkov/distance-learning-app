@@ -27,11 +27,9 @@ type: String,
     type: String,
     required: [true, "Add role!"],
   },
-  coursesEnrolled: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Course'
+  grades: [{
+    type: Array,
   }]
-  
 });
 
 userSchema.statics.findByUsername = async function (username) {

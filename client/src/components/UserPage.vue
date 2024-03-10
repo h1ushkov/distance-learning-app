@@ -1,14 +1,14 @@
 <!-- UserPage.vue -->
 <template>
-    <div v-if="user" class="h-screen dark:bg-gray-700 bg-gray-200 pt-12">
+    <div v-if="user" class="h-screen flex items-center justify-center bg-gray-200 pt-12">
 
         <!-- Card start -->
-            <div class="max-w-sm mx-auto bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-lg">
-                <div class="border-b px-4 pb-6">
+            <div class="max-w-sm mx-auto bg-white overflow-hidden">
+                <div class=" px-4 pb-6">
                     <div class="text-center my-4">  
                         <div class="py-2">
-                            <h3 class="font-bold text-2xl text-gray-800 dark:text-white mb-1">{{ user.fname }} {{ user.mname }} {{ user.lname }}</h3>
-                            <div class="inline-flex text-gray-700 dark:text-gray-300 items-center">
+                            <h3 class="font-bold text-2xl text-gray-800 mb-1">{{ user.fname }} {{ user.mname }} {{ user.lname }}</h3>
+                            <div class="inline-flex text-gray-700 items-center">
  
                             {{ user.role }}
                           @{{ user.username }}
@@ -16,10 +16,10 @@
                         </div>
                     </div>
                     <div class="flex gap-2 px-2">
-                        <button
-                            class="flex-1 rounded-full border-2 border-gray-400 dark:border-gray-700 font-semibold text-black dark:text-white px-4 py-2">
-                            Message
-                        </button>
+                        <a :href="'mailto:' + user.email"
+                            class="flex-1 rounded-full border-2 border-gray-400 dark:border-gray-700 font-semibold text-black  px-4 py-2">
+                            E-mail
+                    </a>
                     </div>
                     
                 </div>

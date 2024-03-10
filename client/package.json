@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "proxy": "http://localhost:8080",
+  "sourcemap": false,
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
@@ -12,10 +13,12 @@
   "dependencies": {
     "@tailwindcss/forms": "^0.5.7",
     "axios": "^1.6.7",
+    "js-cookie": "^3.0.5",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@vitejs/plugin-vue": "^4.5.2",
     "autoprefixer": "^10.4.17",
     "postcss": "^8.4.33",

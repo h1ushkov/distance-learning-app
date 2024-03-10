@@ -1,7 +1,6 @@
 const Course = require('../models/Course');
 const Lesson = require('../models/Lesson');
 const User = require('../models/User');
-const mongoose = require('mongoose');
 
 // Validation middleware for checking required fields
 const validateRequiredFields = (fields) => {
@@ -49,7 +48,7 @@ const generateRandomCode = () => {
 
 const createCourse = async (req, res) => {
   try {
-    const { title, description, section } = req.body;
+    let { title, description, section } = req.body;
 
     validateRequiredFields({ title, section });
     validateDescriptionLength(description);

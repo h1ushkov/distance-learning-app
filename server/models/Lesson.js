@@ -24,6 +24,9 @@ ref: "Course"
   materials: {
     type: Array
   },
+  assigment: {
+    type: Array
+  },
   tests: [{
     type: Array
   }]

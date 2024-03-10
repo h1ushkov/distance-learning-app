@@ -1,96 +1,126 @@
-    <template>
-    <div
-    class="flex items-center flex-shrink-0 h-16 px-8 border-b border-gray-300"
-    >
-    <h1 class="text-lg font-medium">{{ course.title }}</h1>
-    <button
-    class="flex items-center justify-center h-10 px-4 ml-auto text-sm font-medium rounded hover:bg-gray-300"
-    >
-    Action 1
-    </button>
-    <button
-    class="flex items-center justify-center h-10 px-4 ml-2 text-sm font-medium bg-gray-200 rounded hover:bg-gray-300"
-    >
-    Action 2
-    </button>
-    <button class="relative ml-2 text-sm focus:outline-none group">
-    <div
-        class="flex items-center justify-between w-10 h-10 rounded hover:bg-gray-300"
-    >
-        <svg
-        class="w-5 h-5 mx-auto"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        >
-        <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-        />
-        </svg>
-    </div>
-    <div
-        class="absolute right-0 flex-col items-start hidden w-40 pb-1 bg-white border border-gray-300 shadow-lg group-focus:flex"
-    >
-        <a class="w-full px-4 py-2 text-left hover:bg-gray-300" href="#"
-        >Menu Item 1</a
-        >
-        <a class="w-full px-4 py-2 text-left hover:bg-gray-300" href="#"
-        >Menu Item 1</a
-        >
-        <a class="w-full px-4 py-2 text-left hover:bg-gray-300" href="#"
-        >Menu Item 1</a
-        >
-    </div>
-    </button>
-    </div>
+<template>
+  <div class="flex items-center flex-shrink-0 h-16 px-8 border-b border-gray-300 bg-black text-white ">
+    <h1 ref="courseTitle"
+        class="text-lg font-medium hover:bg-gray-600 hover:text-white hover:border-2 hover:border-dotted transition-all"
+        contenteditable
+        @input="updateCourseTitle"
+        @blur="saveCourseTitle"
+        v-html="courseTitle">
+    </h1>
+
+    <!-- Conditionally show buttons if courseId exists -->
+    <template v-if="$route.params.courseId">
+      <button class="flex items-center justify-center h-10 px-4 ml-auto text-sm font-medium rounded hover:bg-gray-900">
+
+      </button>
+      <button @click="deleteCourse" class="flex items-center justify-center h-10 px-4 ml-2 text-sm font-medium rounded hover:bg-gray-900">
+        Delete
+      </button>
     </template>
+  </div>
+</template>
     <script>
     import axios from "axios";
-    export default {
-    name:'Navbar',
-    data() {
-        return {
-        courses: [],
-        user: "",
-        course: {},
-        };
-    },
-    mounted() {
-        this.fetchCourseDetails();
-        this.fetchUser();
-    },
-    methods: {
 
-        async fetchUser() {
-        try {
-            const response = await axios.get(
-            "http://localhost:8080/api/users/current",
-            {
-                withCredentials: true, // Include credentials (cookies, if any)
+    export default {
+      name: 'Navbar',
+      data() {
+        return {
+          courses: [],
+          user: "",
+          course: {},
+        };
+      },
+      computed: {
+        courseTitle: {
+          get() {
+            return this.course.title;
+          },
+          set(value) {
+            this.course.title = value;
+          },
+        },
+      },
+      mounted() {
+        if (this.$route.params.courseId) {
+          this.fetchData();
+        }
+      },
+      watch: {
+        '$route.params.courseId': function (newCourseId) {
+          if (newCourseId) {
+            this.fetchData();
+          }
+        },
+      },
+      methods: {
+        updateCourseTitle() {
+          this.saveCourseTitle();
+        },
+
+        async saveCourseTitle() {
+          if (this.$route.params.courseId) {
+            try {
+              await axios.put(`http://localhost:8080/api/courses/${this.$route.params.courseId}`, {
+                title: this.$refs.courseTitle.textContent,
+              }, {
+                withCredentials: true,
+              });
+            } catch (error) {
+              console.error("Error updating course title:", error);
             }
+          }
+        },
+
+
+        async fetchData() {
+          try {
+            this.isLoading = true;
+            await this.fetchUser();
+            await this.fetchCourseDetails();
+          } catch (error) {
+            console.error("Error fetching data:", error);
+          } finally {
+            this.isLoading = false;
+          }
+        },
+        async fetchUser() {
+          try {
+            const response = await axios.get(
+              "http://localhost:8080/api/users/current",
+              {
+                withCredentials: true, // Include credentials (cookies, if any)
+              }
             );
             this.user = response.data;
-        } catch (error) {
+          } catch (error) {
             console.error("Error fetching user:", error);
-        }
+          }
         },
         async fetchCourseDetails() {
-                const courseId = this.$route.params.courseId;
-                try {
-                    const response = await axios.get(`http://localhost:8080/api/courses/${courseId}`, {
-                        withCredentials: true,
-                    });
-                    this.course = response.data;
-                }
-                catch (error) {
-                    console.error("Error fetching course details:", error);
-                }
-            },
-    
-    }
-    }
+          const courseId = this.$route.params.courseId;
+          try {
+            const response = await axios.get(`http://localhost:8080/api/courses/${courseId}`, {
+              withCredentials: true,
+            });
+            this.course = response.data;
+          } catch (error) {
+            console.error("Error fetching course details:", error);
+          }
+        },
+        async deleteCourse() {
+          const courseId = this.$route.params.courseId;
+          try {
+            await axios.delete(`http://localhost:8080/api/courses/${courseId}`, {
+              withCredentials: true,
+            });
+
+            // Optionally, you can redirect the user after deletion
+            window.location.reload();
+          } catch (error) {
+            console.error("Error deleting course:", error);
+          }
+        },
+      },
+    };
     </script>

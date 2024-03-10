@@ -15,4 +15,6 @@ router.get('/students', roleController.getAllStudents);
 router.get('/instructors', roleController.getAllInstructors);
 router.get('/:id', userController.findUserById);
 router.get('/u/:username', userController.findUserByUsername);
+// router.get('/validate', userController.userValidate);
+
 module.exports = router;    

@@ -18,6 +18,8 @@ router.post('/cid/:courseId', lessonController.createLesson);
 // Маршрут для обновления информации о курсе
 router.put('/:id', lessonController.updateLesson);
 
+router.post('/user/:userId/lesson/:lessonId/grade/:grade', lessonController.updateGrade);
+
 // Маршрут для удаления курса
 router.delete('/l/:id/c/:courseId', lessonController.deleteLesson);
 

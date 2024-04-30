@@ -5,18 +5,6 @@ const lessonSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
 ref: "Course"
   },
-//   course_desc:{
- //    type: mongoose.Schema.Types.String,
-// ref: "Course"
- //  },
- //  course_code:{
- //    type: mongoose.Schema.Types.String,
-// ref: "Course"
- //  },
- //  course_title:{
- //    type: mongoose.Schema.Types.String,
-// ref: "Course"
- // },
   title: {
     type: String,
     required: true
@@ -24,12 +12,24 @@ ref: "Course"
   materials: {
     type: Array
   },
-  assigment: {
+  grade: {
     type: Array
   },
-  tests: [{
+  students: [
+    {
+      userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+      },
+      username: String,
+      fname: String,
+      mname: String,
+      lname: String,
+    },
+  ],
+  assigments: {
     type: Array
-  }]
+  }
 });
 
 const Lesson = mongoose.model('Lesson', lessonSchema);

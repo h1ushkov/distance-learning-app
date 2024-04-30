@@ -31,47 +31,6 @@ app.use((req, res, next) => {
     console.log('Cookies:', req.headers.cookie);
     next();
 });
-
-// app.route("/login").get((req, res) => {
-// res.render("login");
-// });
-
-// app.route("/register").get((req, res) => {
-//  res.render("register");
-// });
-
-//app.route("/logout").get((req, res) => {
-// res.render("logout");
-// });
-
-//app.get("/current", validateToken, (req, res) => {
-// Assuming that the user information is stored in req.user
-// const username = req.user.username;
-// res.send(`Welcome, ${username}! This is your dashboard.`);
-// });
-
-// Add here new templates/renders for for dashboard
-//app.get("/dashboard", validateToken, async (req, res) => {
-//try {
-//  const courses = await Course.find({ user_id: req.user.id });
-//  const currentUser = req.user;
-//  res.render("dashboard.ejs", { courses, user: currentUser });
-// } catch (error) {
-//   res.status(500).json({ message: error.message });
-// }
-// });
-
-//app.get("/course/new", validateToken, (req, res) => {
-//  res.render("course-new.ejs");
-// });
-//app.get("/lesson/new", validateToken, async (req, res) => {
-//try {
-//  const courses = await Course.find({ user_id: req.user.id });
-//  res.render('lesson-new.ejs', { courses });
-//} catch (error) {
-//  res.status(500).json({ message: error.message });
-// }
-// });
 const port = process.env.PORT;
 app.use(express.json());
 app.use(

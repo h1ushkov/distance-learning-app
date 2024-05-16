@@ -109,18 +109,22 @@
           }
         },
         async deleteCourse() {
-          const courseId = this.$route.params.courseId;
-          try {
-            await axios.delete(`http://localhost:8080/api/courses/${courseId}`, {
-              withCredentials: true,
-            });
+  if (!confirm('Are you sure you want to delete this course?')) return;
+  
+  const courseId = this.$route.params.courseId; // Assuming course_id is stored in the lesson object
 
-            // Optionally, you can redirect the user after deletion
-            window.location.reload();
-          } catch (error) {
-            console.error("Error deleting course:", error);
-          }
-        },
+  axios.delete(`http://localhost:8080/api/courses/${courseId}`, { withCredentials: true })
+    .then(response => {
+      alert('Course deleted successfully.');
+      // Redirect or update the view as necessary
+      this.$router.push('/dashboard'); // Adjust this path as needed
+      this.fetchData();
+    })
+    .catch(error => {
+      console.error('Error deleting lesson:', error.response ? error.response.data : 'Server error');
+      alert('Failed to delete lesson.');
+    });
+},
       },
     };
     </script>

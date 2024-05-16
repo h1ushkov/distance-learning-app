@@ -28,8 +28,6 @@ ref: "User",
       fname: String,
       mname: String,
       lname: String,
-      course_grade: Array,
-      lesson_grade: Array,
     },
   ],
   section: {

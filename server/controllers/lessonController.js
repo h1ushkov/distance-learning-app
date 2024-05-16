@@ -1,7 +1,6 @@
 const Lesson = require('../models/Lesson');
 const Course = require('../models/Course');
 const User = require('../models/User');
-
 // Получение списка курсов
 const getAllLessons = async (req, res) => {
   try {
@@ -54,7 +53,6 @@ const createLesson = async (req, res) => {
       fname: student.fname,
       mname: student.mname,
       lname: student.lname,
-      course_grade: [],
       lesson_grade: [], // Initialize lesson grades as empty array
     }));
 
@@ -82,6 +80,57 @@ const updateLesson = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+const addMaterial = async (req, res) => {
+  const { lessonId } = req.params; // ID of the lesson to update
+  const { material } = req.body; // Text of the material to add
+
+  // Validate the input
+  if (!material || material.length > 10000) {
+    return res.status(400).json({ error: 'Material text must be between 1 and 10,000 characters.' });
+  }
+
+  try {
+    // Find the lesson by ID and update
+    const lesson = await Lesson.findByIdAndUpdate(
+      lessonId,
+      { $push: { materials: material } }, // Push the new material into the materials array
+      { new: true, safe: true, upsert: false } // Options for the update operation
+    );
+
+    if (!lesson) {
+      return res.status(404).json({ error: 'Lesson not found.' });
+    }
+
+    res.status(200).json({ success: true, message: 'Material added successfully.', updatedLesson: lesson });
+  } catch (error) {
+    console.error('Error adding material to lesson:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+const deleteMaterial = async (req, res) => {
+  const { lessonId, materialIndex } = req.params; // Assuming materialIndex is passed instead of materialId
+
+  try {
+      const lesson = await Lesson.findById(lessonId);
+      if (!lesson) {
+          return res.status(404).json({ error: 'Lesson not found' });
+      }
+
+      // Check if the material index is within bounds
+      if (materialIndex < 0 || materialIndex >= lesson.materials.length) {
+          return res.status(400).json({ error: 'Invalid material index' });
+      }
+
+      // Remove the material at the specified index
+      lesson.materials.splice(materialIndex, 1);
+
+      await lesson.save();
+      res.json({ success: true, message: 'Material deleted successfully', materials: lesson.materials });
+  } catch (error) {
+      console.error('Error deleting material:', error);
+      res.status(500).json({ error: 'Internal Server Error', details: error.message });
+  }
+};
 
 // Удаление урока
 const deleteLesson = async (req, res) => {
@@ -102,71 +151,40 @@ const deleteLesson = async (req, res) => {
     }
 
     await Lesson.deleteOne({ _id: lessonId });
-
-    res.redirect(`/api/lessons/cid/${courseId}`);
+    res.status(200).json({ lessonId });
   } catch (error) {
     console.error('Error deleting lesson:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-// Изменение оценки для конкретного пользователя в уроке
-const updateUserGradeInLesson = async (req, res) => {
-  try {
-    const { lessonId, userId, newGrade } = req.body;
-
-    const lesson = await Lesson.findById(lessonId);
-    if (!lesson) {
-      res.status(404).json({ error: 'Lesson not found' });
-      return;
-    }
-
-    const user = await User.findById(userId);
-    if (!user) {
-      res.status(404).json({ error: 'User not found' });
-      return;
-    }
-
-    const lessonIndex = user.lesson_grade.findIndex(item => item.lessonId.toString() === lessonId);
-    if (lessonIndex === -1) {
-      res.status(404).json({ error: 'User not enrolled in this lesson' });
-      return;
-    }
-
-    user.lesson_grade[lessonIndex].lesson_grade = newGrade;
-    await user.save();
-
-    res.json({ success: true, message: 'Grade updated successfully' });
-  } catch (error) {
-    console.error('Error updating user grade:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
-
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const updateGrade = async (req, res) => {
-  const { userId, lessonId, grade } = req.body; // Извлечение данных из тела запроса
+  const { userId, lessonId, grade } = req.params;
 
   try {
-    // Проверяем корректность оценки
-    if (grade < 0 || grade > 100 || !Number.isInteger(Number(grade))) {
+    const numericGrade = parseInt(grade, 10);
+    if (isNaN(numericGrade) || numericGrade < 0 || numericGrade > 100) {
       return res.status(400).json({ error: 'Invalid grade value. Grade must be an integer between 0 and 100.' });
     }
 
-    // Обновляем оценку пользователя
-    const user = await User.findOneAndUpdate(
-      { _id: userId, "lesson_grade.lessonId": lessonId },
-      { 
-        "$set": {
-          "lesson_grade.$.grade": grade  // Обновляем оценку в массиве lesson_grade
-        }
-      },
-      { new: true } // Возвращаем обновленный объект пользователя
-    );
+    // Instantiate ObjectId properly
+    const userIdObj = new ObjectId(userId);
+    const lessonIdObj = new ObjectId(lessonId);
 
+    const user = await User.findById(userIdObj);
     if (!user) {
-      return res.status(404).json({ error: 'User not found or lesson not assigned.' });
+      return res.status(404).json({ error: 'User not found.' });
     }
 
+    const lessonIndex = user.lesson_grade.findIndex(lg => lg.lessonId.equals(lessonIdObj));
+    if (lessonIndex === -1) {
+      user.lesson_grade.push({ lessonId: lessonIdObj, grade: numericGrade });
+    } else {
+      user.lesson_grade[lessonIndex].grade = numericGrade;
+    }
+
+    await user.save();
     res.json({ success: true, message: 'Grade updated successfully', user });
   } catch (error) {
     console.error('Error updating user grade:', error);
@@ -174,11 +192,11 @@ const updateGrade = async (req, res) => {
   }
 };
 
-
 module.exports = {
   getAllLessonsFromCourse,
-  updateUserGradeInLesson,
   updateGrade,
+  addMaterial,
+  deleteMaterial,
   getAllLessons,
   getLessonById,
   createLesson,

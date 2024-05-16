@@ -32,12 +32,6 @@ const userSchema = new mongoose.Schema({
     lessonId: { type: Schema.Types.ObjectId, ref: 'Lesson' },
     grade: { // Changed from `lesson_grade` to `grade`
       type: Number, // Changed from String to Number
-      min: 0,
-      max: 100,
-      validate: {
-        validator: Number.isInteger,
-        message: '{VALUE} is not an integer value'
-      }
     }
   }],
   course_grade: [{

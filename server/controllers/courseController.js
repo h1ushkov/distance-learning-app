@@ -185,22 +185,17 @@ const userEnrollCourse = async (req, res) => {
     const { courseCode } = req.body;
 
     if (!courseCode) {
-      res.status(400).json({ error: 'Course code is required' });
-      return;
+      return res.status(400).json({ error: 'Course code is required' });
     }
 
     const course = await Course.findOne({ code: courseCode });
-
     if (!course) {
-      res.status(404).json({ error: 'Course not found with the provided code' });
-      return;
+      return res.status(404).json({ error: 'Course not found with the provided code' });
     }
 
     const isEnrolled = course.students.some(student => student.userId.toString() === req.user.id);
-
     if (isEnrolled) {
-      res.status(400).json({ error: 'You are already enrolled in this course' });
-      return;
+      return res.status(400).json({ error: 'You are already enrolled in this course' });
     }
 
     course.students.push({
@@ -212,6 +207,21 @@ const userEnrollCourse = async (req, res) => {
     });
 
     await course.save();
+
+    // Fetch all lessons of this course
+    const lessons = await Lesson.find({ course_id: course._id });
+    for (const lesson of lessons) {
+      lesson.students.push({
+        userId: req.user.id,
+        username: req.user.username,
+        fname: req.user.fname,
+        mname: req.user.mname,
+        lname: req.user.lname,
+        lesson_grade: [], // initialize with empty or default values if needed
+      });
+
+      await lesson.save();
+    }
 
     res.status(200).json({ success: true, enrolledCourse: course });
   } catch (error) {

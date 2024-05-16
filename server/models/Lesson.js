@@ -27,9 +27,16 @@ ref: "Course"
       lname: String,
     },
   ],
-  assigments: {
-    type: Array
-  }
+  lesson_assignments: [{
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    fileUrl: String,
+    uploadedAt: Date,
+  }],
+  student_assignments: [{
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    fileUrl: String,
+    uploadedAt: Date,
+  }]
 });
 
 const Lesson = mongoose.model('Lesson', lessonSchema);

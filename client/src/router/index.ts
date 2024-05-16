@@ -8,6 +8,7 @@ import Dashboard from '../components/Dashboard.vue';
 import Index from '../components/Index.vue';
 import UserPage from '../components/UserPage.vue';
 import LessonDetails from '../components/fragments/LessonDetails.vue';
+import Lessons from '../components/Lessons.vue'
 import Cookies from 'js-cookie';
 const routes = [
     {
@@ -16,6 +17,12 @@ const routes = [
         component: Index,
         meta: { requiresAuth: true },
     },
+    {
+        path: '/lesson/:lessonId',
+        name: 'Lesson',
+        component: Lessons,
+        props: true
+      },
     {
         path: '/dashboard/lesson/:lessonId',
         name: 'LessonDetails',
